@@ -1,73 +1,48 @@
-import pip
-
-#=============================================================================================================================
-#install modules on the PC if they are not installed
-def import_or_install(package):
-    #test if modules are installed on PC
-    try: 
-        __import__(package)
-    #install module with pip if they are not installed
-    except ImportError:
-        pip.main(['install', package])   
-
-#check if modules are installed on the PC
-def modules_used():
-    list_of_modules = ["loguru",
-                       "sys",
-                       "pandas",
-                       "folium",
-                       "webbrowser",
-                       "numpy"]  
-    #go across the list of modules used and pass it to import_or_install function for check
-    for module in list_of_modules:
-        import_or_install(module)
-
-#check if modules are installed on the PC 
-modules_used()
 import sys
-import pandas as pd
-import folium
-import numpy as np
-#=============================================================================================================================
-#check if depended .py modules are installed, if not stop the code 
+
 try:
-    import data_visualization as DV
+    import startup as startup
 except Exception as e:
-    print("data_visualization.py not found. Stopping the code, please add it to the directory")
+    print("startup.py not found. Stopping the code, please add it to the directory")
     print(e)
     sys.exit(1)
 
-try:
-    import data_processing as DP
-except:
-    print("data_processing.py not found. Stopping the code, please add it to the directory")
-    sys.exit(1)
+from startup import *
 
-try:
-    import machine_learning as ML
-except:
-    print("machine_learning.py not found. Stopping the code, please add it to the directory")
-    sys.exit(1)
-#=============================================================================================================================
+#dataPath = "Data/Crime_Data_from_2010_to_2019.csv"
 
-p1 = DV.Person("John", 36)
-p1.myfunc()
+dataPathLite = "Data/Crime_Data_from_2010_to_2019-lite.csv"
 
-#dataPath = "/Users/zanzver/Documents/BCU/Year_3/CMP6202-A-S1-2021:22_Artificial_Intelligence_and_MachineLearning/Assessment_Information/Assessment1/AI_and_ML_assessment/data/Crime_Data_from_2010_to_2019.csv"
-dataPathLite = "/Users/zanzver/Documents/BCU/Year_3/CMP6202-A-S1-2021:22_Artificial_Intelligence_and_MachineLearning/Assessment_Information/Assessment1/AI_and_ML_assessment/data/Crime_Data_from_2010_to_2019-lite.csv"
-
-#df = pd.read_csv(dataPath, index_col=0)
 dfLite = pd.read_csv(dataPathLite, index_col=False)
-
-#print(df.head())
-
-listOfColumnNames = pd.Index.tolist(dfLite.columns)
-print(listOfColumnNames)
-#print(dfLite.head(1))
-#print(dfLite.iloc[:, 0])
-
-#print(dfLite["LAT"].astype(float))
  
-d1 = DV.DataVisualization(dfLite["LAT"].values, dfLite["LON"].values, dfLite["Crm Cd Desc"].values)
-d1.createMap()
-d1.openMap()
+d1 = startup.DV.DataVisualization(
+    dateRptd = dfLite["Date Rptd"].values,
+    dateOcc = dfLite["DATE OCC"].values,
+    timeOcc = dfLite["TIME OCC"].values,
+    area = dfLite["AREA "].values,
+    areaName = dfLite["AREA NAME"].values,
+    rptDistNo = dfLite["Rpt Dist No"].values,
+    part1or2 = dfLite["Part 1-2"].values,
+    crmCd = dfLite["Crm Cd"].values,
+    crmCdDesc = dfLite["Crm Cd Desc"].values,
+    mocodes = dfLite["Mocodes"].values,
+    victAge = dfLite["Vict Age"].values,
+    victSex = dfLite["Vict Sex"].values,
+    victDescent = dfLite["Vict Descent"].values,
+    premisCd = dfLite["Premis Cd"].values,
+    premisDesc = dfLite["Premis Desc"].values,
+    weaponUsedCd = dfLite["Weapon Used Cd"].values,
+    weaponDesc = dfLite["Weapon Desc"].values,
+    status = dfLite["Status"].values,
+    statusDesc = dfLite["Status Desc"].values,
+    crmCd1 = dfLite["Crm Cd 1"].values,
+    crmCd2 = dfLite["Crm Cd 2"].values,
+    crmCd3 = dfLite["Crm Cd 3"].values,
+    crmCd4 = dfLite["Crm Cd 4"].values,
+    location = dfLite["LOCATION"].values,
+    crossStreet = dfLite["Cross Street"].values,
+    locLAT = dfLite["LAT"].values,
+    locLON = dfLite["LON"].values
+    )
+
+startup.wb.start(d1)
