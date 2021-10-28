@@ -1,4 +1,4 @@
-
+import sys
 try:
     import startup as startup
 except Exception as e:
@@ -91,14 +91,14 @@ class DataVisualization:
         #TODO: put data points to the group (based on lat and lon), use that for making circles bigger or smaller
 
     def createLocation(self):
-        locationData = pd.DataFrame(data={
+        locationData = startup.pd.DataFrame(data={
             'LAT': self.getLAT(), 
             'LON': self.getLON()
             })
         return locationData
 
     def createLocationDetail(self):
-        locationDataDetail = pd.DataFrame(data={
+        locationDataDetail = startup.pd.DataFrame(data={
             'LAT': self.getLAT(), 
             'LON': self.getLON(),
             'crmCdDesc' : self.getCrmCdDesc()
@@ -106,13 +106,13 @@ class DataVisualization:
         return locationDataDetail
 
     def createMap(self):
-        map2 = folium.Map(location=[34.052235, -118.243683], tiles='OpenStreetMap', zoom_start=11)
+        map2 = startup.folium.Map(location=[34.052235, -118.243683], tiles='OpenStreetMap', zoom_start=11)
 
-        marker_cluster = MarkerCluster().add_to(map2)
+        marker_cluster = startup.MarkerCluster().add_to(map2)
         locationlist = self.createLocation().values.tolist()
       
         for point in range(0, len(locationlist)):
-            folium.Marker(
+            startup.folium.Marker(
                 locationlist[point],
                 popup=self.createLocationDetail()['crmCdDesc'][point],
                 color='#69b3a2',
@@ -124,47 +124,43 @@ class DataVisualization:
         return map2
 
     def findDirectionsMap(self, origin, destination):
-        APIkey = "5b3ce3597851110001cf62482c8810f117774c8a9f86ef38fbeb92bd"
-        client = openrouteservice.Client(key = startup.cr.openrouteserviceAPIkey)
+        client = startup.openrouteservice.Client(key = startup.CR.openrouteserviceAPIkey)
 
         coords = (origin, destination)
-        #coords = ((-118.374865,33.990057),(-118.179727,34.000304))
-        #print(type(coords))
         rou = client.directions(coords, profile='foot-walking')
-        #res = client.directions(coords,profile="foot-walking")
         geometry = client.directions(coords, profile='foot-walking')['routes'][0]['geometry']
-        decoded = convert.decode_polyline(geometry)
+        decoded = startup.convert.decode_polyline(geometry)
 
         distance_txt = "<h4> <b>Distance :&nbsp" + "<strong>"+str(round(rou['routes'][0]['summary']['distance']/1000,1))+" Km </strong>" +"</h4></b>"
         duration_txt = "<h4> <b>Duration :&nbsp" + "<strong>"+str(round(rou['routes'][0]['summary']['duration']/60,1))+" Mins. </strong>" +"</h4></b>"
         
         createdMap = self.createMap()
-        folium.GeoJson(decoded).add_child(folium.Popup(distance_txt+duration_txt,max_width=300)).add_to(createdMap)
+        startup.folium.GeoJson(decoded).add_child(startup.folium.Popup(distance_txt+duration_txt,max_width=300)).add_to(createdMap)
 
-        folium.Marker(
+        startup.folium.Marker(
             location=list(coords[0][::-1]),
             popup="Galle fort",
-            icon=folium.Icon(color="green"),
+            icon=startup.folium.Icon(color="green"),
         ).add_to(createdMap)
 
-        folium.Marker(
+        startup.folium.Marker(
             location=list(coords[1][::-1]),
             popup="Jungle beach",
-            icon=folium.Icon(color="red"),
+            icon=startup.folium.Icon(color="red"),
         ).add_to(createdMap)
 
         createdMap.save('map.html')
 
         return(0)
 
-    def testMarker4(self, origin, destination):
-        client = GeocodioClient(startup.cr.geocodioAPIkey)
+    def getPath(self, origin, destination):
+        client = startup.GeocodioClient(startup.CR.geocodioAPIkey)
         origin_location = client.geocode(origin)
         destination_location = client.geocode(destination)
         self.findDirectionsMap(origin_location.coords[::-1], destination_location.coords[::-1])
         return(0)
 
     def openMap(self):
-        webbrowser.open('file://' + os.path.realpath("map.html"))
+        startup.webbrowser.open('file://' + startup.os.path.realpath("map.html"))
 
 #=============================================================================================================================

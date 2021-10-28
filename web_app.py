@@ -1,15 +1,16 @@
-from startup import *
+#from startup import *
 from PyQt5.QtWidgets import * 
 from PyQt5.QtWebEngineWidgets import * 
 from PyQt5.QtCore import *
 
 try:
-    import data_visualization as DV
+    import startup as startup
 except Exception as e:
-    print("data_visualization.py not found. Stopping the code, please add it to the directory")
+    print("startup.py not found. Stopping the code, please add it to the directory")
     print(e)
     sys.exit(1)
 
+from startup import *
 globalVar = ""
 
 class Window(QMainWindow):
@@ -21,9 +22,9 @@ class Window(QMainWindow):
 
         #---------------------adding browser-------------------
         self.browser = QWebEngineView()
-
+        
         #setting url for browser, you can use any other url also
-        self.browser.setUrl(QUrl('file://' + os.path.realpath("map.html")))
+        self.browser.setUrl(QUrl('file://' + startup.os.path.realpath("map.html")))
 
         #to display google search engine on our browser
         self.setCentralWidget(self.browser)
@@ -77,7 +78,8 @@ class Window(QMainWindow):
         return(self.destinationSrc.text())
 
     def findAll(self):
-        answer = (globalVar.testMarker4(self.getOrigin(), self.getDestination()))
+        #()
+        answer = (globalVar.getPath(self.getOrigin(), self.getDestination()))
         if answer == 0:
             self.browser.reload()
         else:
@@ -87,7 +89,7 @@ def start(d1):
     global globalVar
     globalVar = d1
 
-    MyApp = QApplication(sys.argv)
+    MyApp = QApplication(startup.sys.argv)
 
     #setting application name
     QApplication.setApplicationName('Safe Walk')

@@ -9,11 +9,7 @@ except Exception as e:
 
 from startup import *
 
-#dataPath = "Data/Crime_Data_from_2010_to_2019.csv"
-
-dataPathLite = "Data/Crime_Data_from_2010_to_2019-lite.csv"
-
-dfLite = pd.read_csv(dataPathLite, index_col=False)
+dfLite = mainData
  
 d1 = startup.DV.DataVisualization(
     dateRptd = dfLite["Date Rptd"].values,
@@ -45,4 +41,4 @@ d1 = startup.DV.DataVisualization(
     locLON = dfLite["LON"].values
     )
 
-startup.wb.start(d1)
+startup.WB.start(d1)
