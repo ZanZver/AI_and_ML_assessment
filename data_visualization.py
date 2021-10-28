@@ -124,7 +124,6 @@ class DataVisualization:
         return map2
 
     def findDirectionsMap(self, origin, destination):
-        APIkey = "5b3ce3597851110001cf62482c8810f117774c8a9f86ef38fbeb92bd"
         client = openrouteservice.Client(key = startup.cr.openrouteserviceAPIkey)
 
         coords = (origin, destination)
