@@ -24,7 +24,28 @@ class Window(QMainWindow):
         self.browser = QWebEngineView()
         
         #setting url for browser, you can use any other url also
-        self.browser.setUrl(QUrl('file://' + startup.os.path.realpath("map.html")))
+        #startup.DV.createMap
+        try:
+            print("Creating a map")
+            errorCreation, mapCreation = globalVar.createMap()
+            if(errorCreation == 0):
+                pass
+            elif(errorCreation == 1):
+                print("Error 1 caught on map creation")
+                
+        except Exception as e:
+            print("Error creating map")
+            print("Error code: " + str(e))
+
+        fileLocation = ""
+        try:
+            fileLocation = startup.os.path.realpath("map.html")
+        except FileNotFoundError:
+            print("File not found! Please check if map.html has been created")
+        except Exception as e:
+            print("Error has occurred on getting file path.")
+            print("Error message: " + str(e))
+        self.browser.setUrl(QUrl(str("file://") + str(fileLocation)))
 
         #to display google search engine on our browser
         self.setCentralWidget(self.browser)
@@ -72,18 +93,39 @@ class Window(QMainWindow):
         navbar.addAction(findBtn)
 
     def getOrigin(self):
-        return(self.originSrc.text())
+        originStr = str(self.originSrc.text()).strip()
+        if not originStr:
+            return(int(1), str(""))
+        else:
+            return[int(0), str(originStr)]
 
     def getDestination(self):
-        return(self.destinationSrc.text())
+        destinationStr = str(self.destinationSrc.text()).strip()
+        if not destinationStr:
+            return(int(1), str(""))
+        else:
+            return[int(0), str(destinationStr)]
 
     def findAll(self):
-        #()
-        answer = (globalVar.getPath(self.getOrigin(), self.getDestination()))
-        if answer == 0:
-            self.browser.reload()
+        originError, originStr = self.getOrigin()
+        destinationError, destinationStr = self.getDestination()
+        if(((int(originError)) == 0) and ((int(destinationError)) == 0)):
+            if(str(originStr) == str(destinationStr)):
+                print("Please select two different locations for program to work")
+            else:
+                answer = (globalVar.getPath(str(originStr), str(destinationStr)))
+                if answer == 0:
+                    self.browser.reload()
+                else:
+                    print("Error getting path")
+        elif((int(originError) == 1) and (int(destinationError) == 1)):
+            print("Origin and destination are empty, please fill it in")
+        elif(int(originError) == 1):
+            print("Origin is empty, please fill it in")
+        elif(int(destinationError) == 1):
+            print("Destination is empty, please fill it in")
         else:
-            pass
+            print("Error with origin and destination, check it again please")
 
 def start(d1):
     global globalVar

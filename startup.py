@@ -81,9 +81,9 @@ def loadFiles():
         
         returnNum = int(returnDV) - int(returnDP) - int(returnML) - int(returnWB) - int(returnCR)
         if(int(returnNum) == int(0)):
-            return int(0)
+            return (int(0))
         else:
-            return int(1)
+            return (int(1))
 
 def loadData():
     try:

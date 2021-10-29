@@ -8,6 +8,8 @@ except Exception as e:
 
 from startup import *
 
+globalMap = ""
+
 class Person:
     def __init__(self, name, age):
         self.name = name
@@ -120,45 +122,91 @@ class DataVisualization:
                 fill_color='#69b3a2'
             ).add_to(marker_cluster)
             
-        map2.save("map.html")
-        return map2
+        global globalMap
+        globalMap = map2
+
+        try:
+            map2.save("map.html")
+            print("Map created successfully")
+            return [int(0), map2]
+        except Exception as e:
+            print("Error saving map")
+            print("Error code: " + str(e))
+            return [int(1), None]
 
     def findDirectionsMap(self, origin, destination):
-        client = startup.openrouteservice.Client(key = startup.CR.openrouteserviceAPIkey)
+        client = rou = geometry = coords = ""
+        try:
+            client = startup.openrouteservice.Client(key = startup.CR.openrouteserviceAPIkey)
+            coords = (origin, destination)
+            rou = client.directions(coords, profile='foot-walking')
+            geometry = client.directions(coords, profile='foot-walking')['routes'][0]['geometry']
+        except Exception as e:
+            print("Error connecting to the OpenRouteService API, check your credentials.")
+            print("Could not find direction")
+            return (int(1))
 
-        coords = (origin, destination)
-        rou = client.directions(coords, profile='foot-walking')
-        geometry = client.directions(coords, profile='foot-walking')['routes'][0]['geometry']
         decoded = startup.convert.decode_polyline(geometry)
 
         distance_txt = "<h4> <b>Distance :&nbsp" + "<strong>"+str(round(rou['routes'][0]['summary']['distance']/1000,1))+" Km </strong>" +"</h4></b>"
         duration_txt = "<h4> <b>Duration :&nbsp" + "<strong>"+str(round(rou['routes'][0]['summary']['duration']/60,1))+" Mins. </strong>" +"</h4></b>"
         
-        createdMap = self.createMap()
+        errorCode, createdMap = self.createMap()
+        if(errorCode == int(1)):
+            return (int(1))
+        elif(errorCode == int(0)):
+            pass
+        #it is faster to use cached map, but it doesn't work 100% atm...
+        #startup.os.remove("map.html")
+        #createdMap = globalMap
+        
         startup.folium.GeoJson(decoded).add_child(startup.folium.Popup(distance_txt+duration_txt,max_width=300)).add_to(createdMap)
 
         startup.folium.Marker(
             location=list(coords[0][::-1]),
-            popup="Galle fort",
-            icon=startup.folium.Icon(color="green"),
+            popup="Start",
+            icon=startup.folium.Icon(color="green",icon='fas fa-map-marker-alt', prefix='fa'),
         ).add_to(createdMap)
 
         startup.folium.Marker(
             location=list(coords[1][::-1]),
-            popup="Jungle beach",
-            icon=startup.folium.Icon(color="red"),
+            popup="Finish",
+            icon=startup.folium.Icon(color="lightred",icon='fas fa-map-marker-alt', prefix='fa'),
         ).add_to(createdMap)
 
-        createdMap.save('map.html')
+        #createdMap.save("map.html")
+        #createdMap = None
+        #del createdMap
 
-        return(0)
+        try:
+            createdMap.save("map.html")
+            print("Directions found successfully")
+            return (int(0))
+        except Exception as e:
+            print("Error saving map")
+            print("Error code: " + str(e))
+            return (int(1))
 
     def getPath(self, origin, destination):
-        client = startup.GeocodioClient(startup.CR.geocodioAPIkey)
-        origin_location = client.geocode(origin)
-        destination_location = client.geocode(destination)
-        self.findDirectionsMap(origin_location.coords[::-1], destination_location.coords[::-1])
-        return(0)
+        client = ""
+        try:
+            client = startup.GeocodioClient(startup.CR.geocodioAPIkey)
+        except Exception as e:
+            print("Error connecting to the GeoCodio API, check your credentials.")
+            print("Could not decode origin and destination location.")
+            return(int(1))
+
+        origin_location = client.geocode(str(origin))
+        destination_location = client.geocode(str(destination))
+        errorCode = self.findDirectionsMap(origin_location.coords[::-1], destination_location.coords[::-1])
+
+        retrunCode = (int(0) + int(errorCode)) #return sum of error codes, if it is 0, then everything is fine, otherwise error
+        if(retrunCode == int(0)):
+            print("Route created successfully")
+            return (int(0))
+        else:
+            print("Routing has failed")
+            return (int(1))
 
     def openMap(self):
         startup.webbrowser.open('file://' + startup.os.path.realpath("map.html"))
