@@ -10,14 +10,14 @@ except Exception as e:
 from startup import *
 
 #example of data processing
-
+'''
 d2 = startup.DP.DataProcessing(startup.mainData)
 errorCode, data = d2.getCleanData()
 if(int(errorCode) == int(1)):
     print("Error getting the clean data. Program has tried 3 times and failed 3 times. Stopping the program now.")
     sys.exit(1)
 print(data)
-
+'''
 
 #example of data vis
 '''
