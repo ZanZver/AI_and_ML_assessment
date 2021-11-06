@@ -26,7 +26,8 @@ def modulesUsed():
                         "os",
                         "openrouteservice",
                         "json",
-                        "PyQt5"]  
+                        "PyQt5",
+                        "math"]  
         #go across the list of modules used and pass it to import_or_install function for check
         for module in list_of_modules:
             import_or_install(module)
@@ -85,7 +86,7 @@ def loadFiles():
         else:
             return (int(1))
 
-def loadData():
+def loadMainData():
     try:
         import pandas as pd
         mainData = pd.read_csv("Data/Crime_Data_from_2010_to_2019-lite.csv", index_col=False)
@@ -99,7 +100,52 @@ def loadData():
     except Exception as e:
         return [1, e]
 
+def loadDistrictData():
+    try:
+        import pandas as pd 
+        districtData = pd.read_csv("Data/Reporting_Districts_data.csv", index_col=False)
+        return [int(0), districtData]
+    except FileNotFoundError:
+        return(2)
+    except pd.errors.EmptyDataError:
+        return(3)
+    except pd.errors.ParserError:
+        return(4)
+    except Exception as e:
+        return [1, e]
 
+def loadMocodesData():
+    try:
+        import pandas as pd
+        import json
+        data = '''
+          {
+              "0": "zero",
+              "1": "one",
+              "2": "two"
+          }
+        '''
+        # read file
+        with open('Data/MO_CODES_Numerical_20191119.json', 'r') as myfile:
+            data=myfile.read()
+
+        # parse file
+        obj = json.loads(data)
+        mocodesData = pd.read_json("Data/MO_CODES_Numerical_20191119.json", orient ='index')
+
+        #import pandas as pd 
+        
+        #mocodesData = pd.read_json('MO_CODES_Numerical_20191119.json', orient='columns')
+        return [int(0), mocodesData]
+    except FileNotFoundError:
+        return(2)
+    except pd.errors.EmptyDataError:
+        return(3)
+    except pd.errors.ParserError:
+        return(4)
+    except Exception as e:
+        return [1, e]
+    
 modulesUsedErrorCode = int(modulesUsed())
 if(int(modulesUsedErrorCode) == int(0)):
     print("Modules have been successfully loaded")
@@ -113,12 +159,38 @@ if(int(loadFilesErrorCode) == int(0)):
 elif(int(loadFilesErrorCode) == int(1)):
     print("Error loading the files")
 
-mainDataErrorCode, mainData = loadData()
+mainDataErrorCode, mainData = loadMainData()
 if(int(loadFilesErrorCode) == int(0)):
     print("Data have been successfully loaded")
 elif(int(loadFilesErrorCode) == int(1)):
     print("Error loading the data")
     print("Full error message: " + mainData)
+elif(int(loadFilesErrorCode) == int(2)):
+    print("Data not found.")
+elif(int(loadFilesErrorCode) == int(3)):
+    print("No data")
+elif(int(loadFilesErrorCode) == int(4)):
+    print("Data parse error")
+
+districtDataErrorCode, districtData = loadDistrictData()
+if(int(loadFilesErrorCode) == int(0)):
+    print("Data have been successfully loaded")
+elif(int(loadFilesErrorCode) == int(1)):
+    print("Error loading the data")
+    print("Full error message: " + districtData)
+elif(int(loadFilesErrorCode) == int(2)):
+    print("Data not found.")
+elif(int(loadFilesErrorCode) == int(3)):
+    print("No data")
+elif(int(loadFilesErrorCode) == int(4)):
+    print("Data parse error")
+
+mocodesErrorCode, mocodesData = loadMocodesData()
+if(int(loadFilesErrorCode) == int(0)):
+    print("Data have been successfully loaded")
+elif(int(loadFilesErrorCode) == int(1)):
+    print("Error loading the data")
+    print("Full error message: " + mocodesData)
 elif(int(loadFilesErrorCode) == int(2)):
     print("Data not found.")
 elif(int(loadFilesErrorCode) == int(3)):
@@ -138,6 +210,10 @@ from folium.plugins import MarkerCluster as MarkerCluster
 import openrouteservice as openrouteservice
 from openrouteservice import convert as convert
 import json as json
+import math as math
+from numpy.core.numeric import NaN
+from datetime import date as date
+from datetime import datetime as datetime
 
 import data_visualization as DV
 import data_processing as DP
@@ -162,4 +238,9 @@ __all__ = [
     "ML",
     "WB",
     "CR",
-    "mainData"]
+    "mainData",
+    "districtData",
+    "math",
+    "mocodesData",
+    "datetime",
+    "date"]
