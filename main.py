@@ -3,14 +3,25 @@ import sys
 try:
     import startup as startup
 except Exception as e:
-    print("startup.py not found. Stopping the code, please add it to the directory")
+    print("Error in main.py - startup.py not found. Stopping the code, please add it to the directory")
     print(e)
     sys.exit(1)
 
 from startup import *
 
-dfLite = mainData
- 
+#example of data processing
+
+d2 = startup.DP.DataProcessing(startup.mainData)
+errorCode, data = d2.getCleanData()
+if(int(errorCode) == int(1)):
+    print("Error getting the clean data. Program has tried 3 times and failed 3 times. Stopping the program now.")
+    sys.exit(1)
+print(data)
+
+
+#example of data vis
+'''
+dfLite = startup.mainData
 d1 = startup.DV.DataVisualization(
     dateRptd = dfLite["Date Rptd"].values,
     dateOcc = dfLite["DATE OCC"].values,
@@ -42,3 +53,4 @@ d1 = startup.DV.DataVisualization(
     )
 
 startup.WB.start(d1)
+'''
