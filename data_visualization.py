@@ -20,6 +20,7 @@ class Person:
 
 class DataVisualization:
     def __init__(self,
+        drNo,
         dateRptd,
         dateOcc,
         timeOcc,
@@ -48,7 +49,7 @@ class DataVisualization:
         locLAT,
         locLON
     ) -> None:
-        
+        self.drNo = drNo
         self.dateRptd = dateRptd
         self.dateOcc = dateOcc
         self.timeOcc = timeOcc
@@ -140,11 +141,13 @@ class DataVisualization:
             client = startup.openrouteservice.Client(key = startup.CR.openrouteserviceAPIkey)
             coords = (origin, destination)
             rou = client.directions(coords, profile='foot-walking')
+            pathCoordinates = client.directions(coords, profile='foot-walking',format_out= 'geojson', preference ='shortest',geometry= 'true')
+            pathCoordinates = (pathCoordinates['features'][0]['geometry']['coordinates']) #old print
             geometry = client.directions(coords, profile='foot-walking')['routes'][0]['geometry']
         except Exception as e:
             print("Error connecting to the OpenRouteService API, check your credentials.")
             print("Could not find direction")
-            return (int(1))
+            return (int(1), None)
 
         decoded = startup.convert.decode_polyline(geometry)
 
@@ -153,7 +156,7 @@ class DataVisualization:
         
         errorCode, createdMap = self.createMap()
         if(errorCode == int(1)):
-            return (int(1))
+            return (int(1), None)
         elif(errorCode == int(0)):
             pass
         #it is faster to use cached map, but it doesn't work 100% atm...
@@ -181,11 +184,12 @@ class DataVisualization:
         try:
             createdMap.save("map.html")
             print("Directions found successfully")
-            return (int(0))
+            #return pathCoordinates
+            return (int(0), pathCoordinates)
         except Exception as e:
             print("Error saving map")
             print("Error code: " + str(e))
-            return (int(1))
+            return (int(1), None)
 
     def getPath(self, origin, destination):
         client = ""
@@ -198,11 +202,12 @@ class DataVisualization:
 
         origin_location = client.geocode(str(origin))
         destination_location = client.geocode(str(destination))
-        errorCode = self.findDirectionsMap(origin_location.coords[::-1], destination_location.coords[::-1])
+        errorCode, pathCoordinates = self.findDirectionsMap(origin_location.coords[::-1], destination_location.coords[::-1])
 
         retrunCode = (int(0) + int(errorCode)) #return sum of error codes, if it is 0, then everything is fine, otherwise error
         if(retrunCode == int(0)):
             print("Route created successfully")
+            startup.ML.testFindCoords(pathCoordinates)
             return (int(0))
         else:
             print("Routing has failed")

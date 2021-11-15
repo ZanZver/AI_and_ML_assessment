@@ -10,32 +10,37 @@ except Exception as e:
 from startup import *
 
 #example of data processing
-'''
+
 d2 = startup.DP.DataProcessing(startup.mainData)
 errorCode, data = d2.getCleanData()
 if(int(errorCode) == int(1)):
     print("Error getting the clean data. Program has tried 3 times and failed 3 times. Stopping the program now.")
     sys.exit(1)
-print(data)
-'''
+#print(data)
+
 
 #example of data vis
-'''
-dfLite = startup.mainData
+
+dfLite = data
+#print(dfLite)
+#print(dfLite.columns.tolist())
+#'Cross Street', 'LAT', 'LON']
+
 d1 = startup.DV.DataVisualization(
+    drNo = dfLite["DR_NO"].values,
     dateRptd = dfLite["Date Rptd"].values,
-    dateOcc = dfLite["DATE OCC"].values,
-    timeOcc = dfLite["TIME OCC"].values,
-    area = dfLite["AREA "].values,
-    areaName = dfLite["AREA NAME"].values,
+    dateOcc = dfLite["Date OCC"].values,
+    timeOcc = dfLite["Time OCC"].values,
+    area = dfLite["Area"].values,
+    areaName = dfLite["Area name"].values,
     rptDistNo = dfLite["Rpt Dist No"].values,
     part1or2 = dfLite["Part 1-2"].values,
     crmCd = dfLite["Crm Cd"].values,
     crmCdDesc = dfLite["Crm Cd Desc"].values,
     mocodes = dfLite["Mocodes"].values,
-    victAge = dfLite["Vict Age"].values,
-    victSex = dfLite["Vict Sex"].values,
-    victDescent = dfLite["Vict Descent"].values,
+    victAge = dfLite["Vict age"].values,
+    victSex = dfLite["Vict sex"].values,
+    victDescent = dfLite["Vict descent"].values,
     premisCd = dfLite["Premis Cd"].values,
     premisDesc = dfLite["Premis Desc"].values,
     weaponUsedCd = dfLite["Weapon Used Cd"].values,
@@ -46,11 +51,10 @@ d1 = startup.DV.DataVisualization(
     crmCd2 = dfLite["Crm Cd 2"].values,
     crmCd3 = dfLite["Crm Cd 3"].values,
     crmCd4 = dfLite["Crm Cd 4"].values,
-    location = dfLite["LOCATION"].values,
+    location = dfLite["Location"].values,
     crossStreet = dfLite["Cross Street"].values,
     locLAT = dfLite["LAT"].values,
     locLON = dfLite["LON"].values
     )
 
 startup.WB.start(d1)
-'''

@@ -118,7 +118,8 @@ def loadMocodesData():
     try:
         import pandas as pd
         import json
-        data = '''
+        '''
+        data = 
           {
               "0": "zero",
               "1": "one",
@@ -126,11 +127,11 @@ def loadMocodesData():
           }
         '''
         # read file
-        with open('Data/MO_CODES_Numerical_20191119.json', 'r') as myfile:
-            data=myfile.read()
+        #with open('Data/MO_CODES_Numerical_20191119.json', 'r') as myfile:
+        #    data=myfile.read()
 
         # parse file
-        obj = json.loads(data)
+        #obj = json.loads(data)
         mocodesData = pd.read_json("Data/MO_CODES_Numerical_20191119.json", orient ='index')
 
         #import pandas as pd 
@@ -214,6 +215,13 @@ import math as math
 from numpy.core.numeric import NaN
 from datetime import date as date
 from datetime import datetime as datetime
+from sklearn import model_selection as model_selection
+from sklearn.tree import DecisionTreeRegressor as DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor as RandomForestRegressor
+from sklearn.metrics import r2_score as r2_score
+from sklearn.metrics import mean_squared_error as mean_squared_error
+from math import sqrt as sqrt
+from sklearn.model_selection import train_test_split as train_test_split
 
 import data_visualization as DV
 import data_processing as DP
@@ -243,4 +251,11 @@ __all__ = [
     "math",
     "mocodesData",
     "datetime",
-    "date"]
+    "date",
+    "model_selection", 
+    "DecisionTreeRegressor", 
+    "RandomForestRegressor", 
+    "r2_score", 
+    "mean_squared_error",
+    "sqrt", 
+    "train_test_split"]
