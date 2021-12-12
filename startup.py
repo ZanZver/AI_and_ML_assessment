@@ -1,8 +1,4 @@
-#packages
 import pip
-
-#class Startup():
-
 
 def import_or_install(package):
         #test if modules are installed on PC
@@ -27,7 +23,8 @@ def modulesUsed():
                         "openrouteservice",
                         "json",
                         "PyQt5",
-                        "math"]  
+                        "math",
+                        "graphviz"]  
         #go across the list of modules used and pass it to import_or_install function for check
         for module in list_of_modules:
             import_or_install(module)
@@ -117,25 +114,7 @@ def loadDistrictData():
 def loadMocodesData():
     try:
         import pandas as pd
-        import json
-        data = '''
-          {
-              "0": "zero",
-              "1": "one",
-              "2": "two"
-          }
-        '''
-        # read file
-        with open('Data/MO_CODES_Numerical_20191119.json', 'r') as myfile:
-            data=myfile.read()
-
-        # parse file
-        obj = json.loads(data)
         mocodesData = pd.read_json("Data/MO_CODES_Numerical_20191119.json", orient ='index')
-
-        #import pandas as pd 
-        
-        #mocodesData = pd.read_json('MO_CODES_Numerical_20191119.json', orient='columns')
         return [int(0), mocodesData]
     except FileNotFoundError:
         return(2)
@@ -145,6 +124,22 @@ def loadMocodesData():
         return(4)
     except Exception as e:
         return [1, e]
+ 
+   
+def loadUCRData():
+    try:
+        import json
+        data = 0
+        with open('Data/UCR-COMPSTAT062618.json', 'r') as myfile:
+            data=myfile.read()
+            
+        obj = json.loads(data)
+        return (int(0), obj)
+    except FileNotFoundError:
+        return(2)
+    except Exception as e:
+        return (1, e)
+
     
 modulesUsedErrorCode = int(modulesUsed())
 if(int(modulesUsedErrorCode) == int(0)):
@@ -199,6 +194,15 @@ elif(int(loadFilesErrorCode) == int(4)):
     print("Data parse error")
 
 
+ucrErrorCode, ucrData = loadUCRData()
+if(int(loadFilesErrorCode) == int(0)):
+    print("Data have been successfully loaded")
+elif(int(loadFilesErrorCode) == int(1)):
+    print("Error loading the data")
+    print("Full error message: " + mocodesData)
+elif(int(loadFilesErrorCode) == int(2)):
+    print("Data not found.")
+
 import sys as sys
 import pandas as pd
 import folium as folium
@@ -214,6 +218,15 @@ import math as math
 from numpy.core.numeric import NaN
 from datetime import date as date
 from datetime import datetime as datetime
+from sklearn import model_selection as model_selection
+from sklearn.tree import DecisionTreeRegressor as DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor as RandomForestRegressor
+from sklearn.metrics import r2_score as r2_score
+from sklearn.metrics import mean_squared_error as mean_squared_error
+from math import sqrt as sqrt
+from sklearn.model_selection import train_test_split as train_test_split
+from sklearn.tree import export_graphviz as export_graphviz
+import graphviz as graphviz
 
 import data_visualization as DV
 import data_processing as DP
@@ -243,4 +256,14 @@ __all__ = [
     "math",
     "mocodesData",
     "datetime",
-    "date"]
+    "date",
+    "model_selection", 
+    "DecisionTreeRegressor", 
+    "RandomForestRegressor", 
+    "r2_score", 
+    "mean_squared_error",
+    "sqrt", 
+    "train_test_split" ,
+    "ucrData",
+    "export_graphviz",
+    "graphviz"]

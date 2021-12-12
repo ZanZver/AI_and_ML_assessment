@@ -285,6 +285,15 @@ class DataProcessing:
         return False
 
     def builder(self, tryCount):
+        '''
+        Input:
+            tryCount - number of attempts
+        Return:
+            Error code, data (if any), tryCount (doesn't change in here)
+            Error codes: 0 (no errors) and 1 (general error)
+        Function:
+            Build a clean dataset based with constructors for each row
+        '''
         arr = startup.np.stack((
             self.getDrNo(),
             self.getDateRptd(),
@@ -316,10 +325,23 @@ class DataProcessing:
             self.getLon()), axis=1
         )
         
-        arr2 = [None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None]
-        count = int(0)
+        arr2 = [
+            None,None,None,
+            None,None,None,
+            None,None,None,
+            None,None,None,
+            None,None,None,
+            None,None,None,
+            None,None,None,
+            None,None,None,
+            None,None,None,
+            None
+            ]
+        
+        count = int(0) #
         itemsRemoved = int(0)
-        #print(arr)
+        
+        # Iterate across full array if to fill new array
         for item in arr:
             errorCount = int(0)
 
@@ -552,8 +574,9 @@ class DataProcessing:
             elif(errorCount != int(0)):
                 itemsRemoved +=1
                 
-        arr2 = startup.np.delete(arr2, (0), axis=0)
-        print("Items removed: " + str(itemsRemoved))
+        
+        arr2 = startup.np.delete(arr2, (0), axis=0) # Remove first item from array since it is empty
+        print("Items removed: " + str(itemsRemoved)) # Let the user know how may items have been removed
         columnNames = [
             "DR_NO",
             "Date Rptd",
@@ -585,6 +608,7 @@ class DataProcessing:
             "LON"
         ]
 
+        # Create a new datafreame and return it
         df = startup.pd.DataFrame() 
         try:
             df = startup.pd.DataFrame(arr2, columns = columnNames)
@@ -607,12 +631,22 @@ class DataProcessing:
             return(int(1), None, tryCount)
         
     def getCleanData(self, tryCount = 0):
-        try:
+        '''
+        Input:
+            No input is required, tryCount is here for recursive reasons to break out of recursive function
+            after 3 attempts
+        Return:
+            Two things are returned: error code and data (if it is any)
+            Error codes: 0 (no errors) and 1 (general error)
+        Function:
+            Try to return a clean dataset
+        '''
+        try: # Check if there is already a file there and read it if possible. This helps with speed.
             cleanDataFrame = startup.pd.read_csv("Data/cleanData.csv", index_col=0)
             print("Clean data have been successfully loaded.")
             return(int(0), cleanDataFrame)
-        except FileNotFoundError:
-            errorCode, cleanDataFrame, tryCount= self.builder(tryCount)
+        except FileNotFoundError: # If file is not there, attempt to create one
+            errorCode, cleanDataFrame, tryCount= self.builder(tryCount) # Call builder class, 
             if(int(errorCode) == int(0)):
                 return(int(0), cleanDataFrame)
             elif(int(errorCode) == int(1)):
@@ -1587,15 +1621,3 @@ class DataProcessing:
 
     def getLon(self):
         return self.locLon
-
-    def missingData(self):
-        print(self.originalData)
-
-    def fixAnomalies():
-        pass
-
-    def removeDuplicates():
-        pass
-
-    def myfunc(self):
-        pass
