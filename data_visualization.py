@@ -10,14 +10,6 @@ from startup import *
 
 globalMap = ""
 
-class Person:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-
-    def myfunc(self):
-        print("Hello my name is " + self.name)
-
 class DataVisualization:
     def __init__(self,
         drNo,
@@ -159,9 +151,6 @@ class DataVisualization:
             return (int(1), None)
         elif(errorCode == int(0)):
             pass
-        #it is faster to use cached map, but it doesn't work 100% atm...
-        #startup.os.remove("map.html")
-        #createdMap = globalMap
         
         startup.folium.GeoJson(decoded).add_child(startup.folium.Popup(distance_txt+duration_txt,max_width=300)).add_to(createdMap)
 
@@ -176,10 +165,6 @@ class DataVisualization:
             popup="Finish",
             icon=startup.folium.Icon(color="lightred",icon='fas fa-map-marker-alt', prefix='fa'),
         ).add_to(createdMap)
-
-        #createdMap.save("map.html")
-        #createdMap = None
-        #del createdMap
 
         try:
             createdMap.save("map.html")
@@ -207,7 +192,7 @@ class DataVisualization:
         retrunCode = (int(0) + int(errorCode)) #return sum of error codes, if it is 0, then everything is fine, otherwise error
         if(retrunCode == int(0)):
             print("Route created successfully")
-            startup.ML.testFindCoords(pathCoordinates)
+            startup.ML.findCoords(pathCoordinates)
             return (int(0))
         else:
             print("Routing has failed")

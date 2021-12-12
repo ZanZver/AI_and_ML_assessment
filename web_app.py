@@ -1,4 +1,3 @@
-#from startup import *
 from PyQt5.QtWidgets import * 
 from PyQt5.QtWebEngineWidgets import * 
 from PyQt5.QtCore import *
@@ -45,6 +44,7 @@ class Window(QMainWindow):
         except Exception as e:
             print("Error has occurred on getting file path.")
             print("Error message: " + str(e))
+            
         self.browser.setUrl(QUrl(str("file://") + str(fileLocation)))
 
         #to display google search engine on our browser
@@ -116,6 +116,7 @@ class Window(QMainWindow):
                 answer = (globalVar.getPath(str(originStr), str(destinationStr)))
                 if answer == 0:
                     self.browser.reload()
+                    self.openPdf()
                 else:
                     print("Error getting path")
         elif((int(originError) == 1) and (int(destinationError) == 1)):
@@ -126,6 +127,38 @@ class Window(QMainWindow):
             print("Destination is empty, please fill it in")
         else:
             print("Error with origin and destination, check it again please")
+            
+    def openPdf(self):
+        #1) open new tab
+        #2) open pdf in the new tab
+        pass
+        
+        
+    def add_new_tab(self, qurl = None, label ="Blank"):
+        # if url is blank
+        if qurl is None:
+            # creating a google url
+            qurl = QUrl('http://www.google.com')
+ 
+        # creating a QWebEngineView object
+        browser = QWebEngineView()
+ 
+        # setting url to browser
+        browser.setUrl(qurl)
+ 
+        # setting tab index
+        i = self.tabs.addTab(browser, label)
+        self.tabs.setCurrentIndex(i)
+ 
+        # adding action to the browser when url is changed
+        # update the url
+        browser.urlChanged.connect(lambda qurl, browser = browser:
+                                   self.update_urlbar(qurl, browser))
+ 
+        # adding action to the browser when loading is finished
+        # set the tab title
+        browser.loadFinished.connect(lambda _, i = i, browser = browser:
+                                     self.tabs.setTabText(i, browser.page().title()))
 
 def start(d1):
     global globalVar
